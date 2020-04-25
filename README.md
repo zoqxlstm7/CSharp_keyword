@@ -172,8 +172,8 @@ interface IAA
 ```
 #### 참조 가능
 ```c#
-class AA {}
-class BB {}
+class AA : IAA {}
+class BB : IBB {}
 
 BB bb = new BB();
 
