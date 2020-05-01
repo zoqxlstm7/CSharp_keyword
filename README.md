@@ -739,3 +739,142 @@ var QueryData =
         gender = (detail.gender == 0) ? "여자" : "남자"
     };
 ```
+## 파일 처리
+> using System.IO;
+### 스트림 (Stream)
+- 파일, 네트워크 등에서 사용
+- File & Directory 클래스
+#### 파일 생성
+```c#
+// 경로를 이용해 파일 생성
+FileStream fs = File.Create(path);
+// 파일이 존재하는지 확인
+File.Exists(path);
+// 파일이 생성된 시간 반환
+File.GetCreationTime(path);
+```
+```c#
+// FileInfo 클래스를 이용한 파일 생성
+FileInfo fileInfo = new FileInfo("b.txt");
+FileStream fs = fileInfo.Create();
+
+// 메모리 반환
+fs.close();
+// 파일 복사
+File.Copy("a.txt", "c.txt");
+// 파일 복사
+FileInfo dst = fileInfo.CopyTo("d.txt");
+```
+### 바이트 입출력
+- FileStream, BitConverter
+- 데이터 형식을 byte 배열로 변환(BitConverter)
+#### 쓰기
+```c#
+long lValue = 123456789123456789;
+Stream outStream = new FileStream(fileName, FileMode.Create);
+byte[] wBytes = BitConverter.GetBytes(lValue);
+outStream.Write(wBytes, 0, wBytes.Length);
+```
+#### 읽기
+```c#
+FileStream inStream = new FileStream(fileName, FileMode.Open);
+byte[] rBytes = new byte[sizeof(long)];
+inStream.Read(rBytes, 0, rBytes.Length);
+long readValue = BitConverter.ToInt64(rBytes, 0);
+```
+### 텍스트 입출력
+- StreamWriter, StreamReader
+#### 쓰기
+```c#
+FileStream fsWrite = new FileStream("a.txt", FileMode.Create);
+StreamWrite sw = new StreamWriter(fsWrite);
+
+sw.Write("Hello World");
+
+sw.Close();
+```
+#### 읽기
+```c#
+FileStream fsRead = File.Open("a.txt", FileMode.Open);
+StreamReader sr = new StreamReader(fsRead);
+
+while(false == sr.EndofStream){
+    Console.WriteLine(sr.ReadLine());
+}
+
+sr.Close();
+```
+#### 단독 사용 가능
+```c#
+StreamWriter sw = new StreamWriter("b.txt");
+
+sw.WriteLine("Hello World");
+
+sw.Close();
+```
+```c#
+StreamReader sr = new StreamReader("b.txt");
+
+while(false == sr.EndOfStream){
+    Console.WriteLine(sr.ReadLine());
+}
+
+sr.Close();
+```
+### 사용자 정의 입출력
+- [Serializable]
+- BinaryFormatter, Serialize, Deserialize
+> using System.Runtime.Serialization.Formatters.Binary;
+```c#
+[Serializable]
+struct Player
+{
+    public string Name { get; set; }
+    public int Level { get; set; }
+    public double Exp { get; set; }
+}
+```
+#### 쓰기
+```c#
+FileStream fsW = new FileStream("savePlayer.txt", FileMode.Create);
+BinaryFormatter bf = new BinaryFormatter();
+bf.Serialize(fsW, player);
+fsW.Close();
+```
+#### 읽기
+```c#
+FileStream fsR = new FileStream("savePlayer.txt", FileMode.Openn);
+BinaryFormatter bf = new BinaryFormatter();
+Player[] readPlayer = (Player[])bf.Deserialize(fsR);
+fsR.Close();
+```
+### 이진 입출력
+- BinaryWriter, BinaryReader
+- 모든 기본 데이터 형식에 읽고 쓰기 오버로딩
+#### 쓰기
+```c#
+FileStream fs = new FileStream(fileName, FileMode.Create);
+BinaryWriter bw = new BinaryWriter(fs);
+
+bw.Write(100);
+bw.Write(100.001f);
+```
+#### 읽기
+```c#
+FileStream fs = new FileStream(fileName, FileMode.Open);
+BinaryReader br = new BinaryReader(fs);
+
+int num = br.ReadInt32();
+float fNum == br.ReadSingle();
+```
+### CSV 데이터 활용
+- 게임 데이터 협업
+- String.Split 활용
+```c#
+string str = "0, 1, 2, 3, 4, 5";
+string[] splitRead = str.Split(',');
+
+for(int i = 0; i < splitRead.Length; ++i){
+    Console.Write(" {0} ", splitRead[i]);
+}
+```
